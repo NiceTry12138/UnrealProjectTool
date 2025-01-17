@@ -41,6 +41,7 @@ else()
             SubUI/UpdatePlugins/updateplugindialogue.h SubUI/UpdatePlugins/updateplugindialogue.cpp SubUI/UpdatePlugins/updateplugindialogue.ui
             CommonData.h
             CommonData.h
+            Util/unrealhelper.h Util/unrealhelper.cpp
 
 
         )

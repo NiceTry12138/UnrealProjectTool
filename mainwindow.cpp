@@ -2,6 +2,7 @@
 #include "QDebug"
 #include "./ui_mainwindow.h"
 #include "./SubUI/UpdatePlugins/updateplugindialogue.h"
+#include "Util/unrealhelper.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,6 +31,8 @@ void MainWindow::BindCallabck()
 
 void MainWindow::OnUpdatePluginBtnClicked()
 {
+    UnrealHelper::Get();
+
     // qDebug() << "更新插件";
     if(UpdatePluginDialoguePtr == nullptr)
     {

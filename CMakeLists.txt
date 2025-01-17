@@ -43,6 +43,7 @@ else()
             CommonData.h
             Util/unrealhelper.h Util/unrealhelper.cpp
             Util/applicationsettings.h Util/applicationsettings.cpp
+            SubUI/UpdatePlugins/gitpathlistwidgetitem.h SubUI/UpdatePlugins/gitpathlistwidgetitem.cpp SubUI/UpdatePlugins/gitpathlistwidgetitem.ui
 
 
         )

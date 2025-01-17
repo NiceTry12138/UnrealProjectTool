@@ -44,5 +44,5 @@ void MainWindow::OnUpdatePluginBtnClicked()
 
 void MainWindow::OnUpdatePluginDialogueClosed()
 {
-    // TODO 看情况 是否需要清理 UpdatePluginDialoguePtr 对象
+    // TODO 看情况 是否需要清理 UpdatePluginDialoguePtr 对象33
 }

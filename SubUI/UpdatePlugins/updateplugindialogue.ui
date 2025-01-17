@@ -40,7 +40,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QListView" name="GitPathListView"/>
+    <widget class="QListWidget" name="GitPathListWidget"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

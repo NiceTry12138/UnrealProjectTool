@@ -7,6 +7,7 @@
 #include "QRegularExpression"
 #include "QRegularExpressionMatch"
 #include "../../Util/applicationsettings.h"
+#include "QListWidget"
 
 QWidget *GitPathStyleDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -81,7 +82,7 @@ UpdatePluginDialogue::UpdatePluginDialogue(QWidget *parent)
 UpdatePluginDialogue::~UpdatePluginDialogue()
 {
     delete ui;
-    GitPathDelegatePtr.reset();
+    // GitPathDelegatePtr.reset();
 }
 
 void UpdatePluginDialogue::Init()
@@ -97,21 +98,22 @@ void UpdatePluginDialogue::BindCallback()
     connect(ui->BtnUpdate, &QPushButton::clicked, this, &UpdatePluginDialogue::OnUpdateBtnClicked);
     connect(ui->BtnClose, &QPushButton::clicked, this, &UpdatePluginDialogue::OnCloseBtnClicked);
     connect(ui->BtnAddGit, &QPushButton::clicked, this, &UpdatePluginDialogue::OnAddBtnClicked);
-    connect(GitPathDelegatePtr.get(), &GitPathStyleDelegate::ButtonClicked, this, &UpdatePluginDialogue::OnDeleteListItemClicked);
+    // connect(GitPathDelegatePtr.get(), &GitPathStyleDelegate::ButtonClicked, this, &UpdatePluginDialogue::OnDeleteListItemClicked);
 }
 
 void UpdatePluginDialogue::InitData()
 {
     GitPathResources = ApplicationSettings::Get()->GetAddedPluginResources();
 
-    GitPathListModel.setStringList(GitPathResources);
-    GitPathDelegatePtr = std::make_shared<GitPathStyleDelegate>(ui->GitPathListView);
+    // GitPathListModel.setStringList(GitPathResources);
+    // GitPathDelegatePtr = std::make_shared<GitPathStyleDelegate>(ui->GitPathListWidget);
 }
 
 void UpdatePluginDialogue::InitWidgets()
 {
-    ui->GitPathListView->setModel(&GitPathListModel);
-    ui->GitPathListView->setItemDelegate(GitPathDelegatePtr.get());
+    // ui->GitPathListWidget->setModel(&GitPathListModel);
+    // ui->GitPathListWidget->setItemDelegate(GitPathDelegatePtr.get());
+    // ui->GitPathListWidget->addItem()
 
 
 }
@@ -170,7 +172,8 @@ void UpdatePluginDialogue::OnAddBtnClicked()
     }
 
     GitPathResources.append(InGitPath);
-    GitPathListModel.setStringList(GitPathResources);
+
+    // GitPathListModel.setStringList(GitPathResources);
     UpdateConfig();
 }
 
@@ -180,10 +183,10 @@ void UpdatePluginDialogue::OnUpdateBtnClicked()
 
 void UpdatePluginDialogue::OnDeleteListItemClicked(const QModelIndex &index)
 {
-    QString DeleteData = GitPathListModel.data(index).toString();
-    int DeleteIndex = GitPathResources.indexOf(DeleteData);
-    GitPathResources.removeAt(DeleteIndex);
-    GitPathListModel.setStringList(GitPathResources);
+    // QString DeleteData = GitPathListModel.data(index).toString();
+    // int DeleteIndex = GitPathResources.indexOf(DeleteData);
+    // GitPathResources.removeAt(DeleteIndex);
+    // GitPathListModel.setStringList(GitPathResources);
     UpdateConfig();
 }
 

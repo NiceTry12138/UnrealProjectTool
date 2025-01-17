@@ -64,8 +64,8 @@ private:
 
 private:
     // QObjects
-    QStringListModel GitPathListModel;
-    std::shared_ptr<GitPathStyleDelegate> GitPathDelegatePtr;
+    // QStringListModel GitPathListModel;
+    // std::shared_ptr<GitPathStyleDelegate> GitPathDelegatePtr;
 
 private:
     // Datas

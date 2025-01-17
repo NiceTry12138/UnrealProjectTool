@@ -13,6 +13,8 @@ public:
     UnrealHelper(const UnrealHelper& Other) = delete;
     UnrealHelper(const UnrealHelper&& Other) = delete;
 
+    std::set<QString>& GetInstalledUnrealVersion();
+
 protected:
     UnrealHelper();
 

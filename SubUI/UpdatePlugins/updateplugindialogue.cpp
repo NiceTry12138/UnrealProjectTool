@@ -4,7 +4,9 @@
 #include "QPainter"
 #include "QMouseEvent"
 #include "QDebug"
-
+#include "QRegularExpression"
+#include "QRegularExpressionMatch"
+#include "../../Util/applicationsettings.h"
 
 QWidget *GitPathStyleDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -100,11 +102,10 @@ void UpdatePluginDialogue::BindCallback()
 
 void UpdatePluginDialogue::InitData()
 {
-    // TODO 从配置文件中读取已经配置了的 Git 仓库路径到 GitPathResources 属性中
+    GitPathResources = ApplicationSettings::Get()->GetAddedPluginResources();
 
     GitPathListModel.setStringList(GitPathResources);
     GitPathDelegatePtr = std::make_shared<GitPathStyleDelegate>(ui->GitPathListView);
-
 }
 
 void UpdatePluginDialogue::InitWidgets()
@@ -130,6 +131,24 @@ EErrorType UpdatePluginDialogue::CheckGitPathValid(const QString &GitPath)
     }
 
     // TODO 通过正则检查链接是否正确
+    bool bStartCheck = GitPath.startsWith("https://") || GitPath.startsWith("git@");
+    bool bEndCheck = GitPath.endsWith(".git");
+
+    if(!(bStartCheck && bEndCheck))
+    {
+        return EErrorType::E_ERRORCONTENT;
+    }
+
+    QString NewRepoName = GetRepoNameByPath(GitPath);
+
+    for(const auto& AddedRepo : GitPathResources)
+    {
+        QString AddedRepoName = GetRepoNameByPath(AddedRepo);
+        if(AddedRepoName == NewRepoName)
+        {
+            return EErrorType::E_SAMETYPE;
+        }
+    }
 
     return EErrorType::E_NONE;
 }
@@ -143,22 +162,75 @@ void UpdatePluginDialogue::OnAddBtnClicked()
 {
     QString InGitPath = ui->gitLineEdit->text();
     ui->gitLineEdit->clear();
-    if(CheckGitPathValid(InGitPath) != EErrorType::E_NONE)
+    auto AddedErrorType = CheckGitPathValid(InGitPath);
+    if(AddedErrorType != EErrorType::E_NONE)
     {
-        QMessageBox::information(nullptr, "添加路径失败", "请检查路径是否有效 ", QMessageBox::No, QMessageBox::No);
+        LogWithAddRepo(AddedErrorType);
         return;
     }
 
     GitPathResources.append(InGitPath);
     GitPathListModel.setStringList(GitPathResources);
+    UpdateConfig();
 }
 
 void UpdatePluginDialogue::OnUpdateBtnClicked()
 {
-
 }
 
 void UpdatePluginDialogue::OnDeleteListItemClicked(const QModelIndex &index)
 {
-    qDebug() << "Clicked";
+    QString DeleteData = GitPathListModel.data(index).toString();
+    int DeleteIndex = GitPathResources.indexOf(DeleteData);
+    GitPathResources.removeAt(DeleteIndex);
+    GitPathListModel.setStringList(GitPathResources);
+    UpdateConfig();
+}
+
+QString UpdatePluginDialogue::GetRepoNameByPath(const QString &InGitPath)
+{
+    // https://github.com/NiceTry12138/UnrealProjectTool.git
+    // git@github.com:NiceTry12138/UnrealProjectTool.git
+    QString Result;
+    auto SplitStrs = InGitPath.split("/");
+    if(SplitStrs.size() <= 0)
+    {
+        return Result;
+    }
+
+    Result = SplitStrs.last();
+    if(Result.endsWith(".git"))
+    {
+        Result.chop(4);
+    }
+
+    return Result;
+}
+
+void UpdatePluginDialogue::LogWithAddRepo(EErrorType InType)
+{
+    switch (InType) {
+    case EErrorType::E_SAMETYPE:
+        QMessageBox::information(nullptr, "添加路径失败", "已经存在同名仓库 ", QMessageBox::No, QMessageBox::No);
+        break;
+    case EErrorType::E_ERRORCONTENT:
+        QMessageBox::information(nullptr, "添加路径失败", "请检查路径是否有效 ", QMessageBox::No, QMessageBox::No);
+        break;
+    case EErrorType::E_NOEXISTS:
+        QMessageBox::information(nullptr, "添加路径失败", "请检查路径是否有效 ", QMessageBox::No, QMessageBox::No);
+        break;
+    default:
+        break;
+    }
+}
+
+void UpdatePluginDialogue::UpdateConfig()
+{
+    QStringList NewList;
+    for(const auto& AddedRepo : GitPathResources)
+    {
+        NewList.append(AddedRepo);
+    }
+
+    ApplicationSettings::Get()->SetAddedPluginResources(NewList);
 }

@@ -54,6 +54,11 @@ protected:
     void OnUpdateBtnClicked();
     void OnDeleteListItemClicked(const QModelIndex &index);
 
+    QString GetRepoNameByPath(const QString& InGitPath);
+    void LogWithAddRepo(EErrorType InType);
+
+    void UpdateConfig();
+
 private:
     Ui::UpdatePluginDialogue *ui;
 

@@ -42,6 +42,7 @@ else()
             CommonData.h
             CommonData.h
             Util/unrealhelper.h Util/unrealhelper.cpp
+            Util/applicationsettings.h Util/applicationsettings.cpp
 
 
         )

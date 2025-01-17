@@ -14,6 +14,11 @@ UnrealHelper *UnrealHelper::Get()
     return &Helper;
 }
 
+std::set<QString>& UnrealHelper::GetInstalledUnrealVersion()
+{
+    return InstalledUnreal;
+}
+
 UnrealHelper::UnrealHelper() {
     Init();
 }

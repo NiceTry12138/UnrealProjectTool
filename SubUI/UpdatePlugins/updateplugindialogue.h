@@ -5,6 +5,9 @@
 #include "QStringListModel"
 #include "QStyledItemDelegate"
 #include "../../CommonData.h"
+#include "QListWidgetItem"
+
+typedef std::shared_ptr<QListWidgetItem> QListWidgetItemPtr;
 
 class GitPathStyleDelegate : public QStyledItemDelegate
 {
@@ -37,9 +40,6 @@ public:
     explicit UpdatePluginDialogue(QWidget *parent = nullptr);
     ~UpdatePluginDialogue();
 
-// Q_SIGNALS:
-//     void OnClosed();
-
 protected:
     void Init();
     void BindCallback();
@@ -48,11 +48,16 @@ protected:
 
     EErrorType CheckGitPathValid(const QString& GitPath);
 
+    void AddListWidgetItem(const QString& InInfo);
+    void RemoveListWidgetItem(int ID, bool DelteID = true);
+
 protected:
     void OnCloseBtnClicked();
     void OnAddBtnClicked();
     void OnUpdateBtnClicked();
-    void OnDeleteListItemClicked(const QModelIndex &index);
+
+    void OnDeleteListItemClicked(const QString& Info, int OutID);
+    void OnDetailListItemClicked(const QString& Info, int OutID);
 
     QString GetRepoNameByPath(const QString& InGitPath);
     void LogWithAddRepo(EErrorType InType);
@@ -63,15 +68,14 @@ private:
     Ui::UpdatePluginDialogue *ui;
 
 private:
-    // QObjects
-    // QStringListModel GitPathListModel;
-    // std::shared_ptr<GitPathStyleDelegate> GitPathDelegatePtr;
 
 private:
+    int WidgetIndex = 0;
+
     // Datas
     QStringList GitPathResources;
 
-
+    std::map<int, QListWidgetItemPtr> WidgetItemList;
 };
 
 #endif // UPDATEPLUGINDIALOGUE_H

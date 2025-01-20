@@ -45,12 +45,16 @@ else()
             Util/applicationsettings.h Util/applicationsettings.cpp
             SubUI/UpdatePlugins/gitpathlistwidgetitem.h SubUI/UpdatePlugins/gitpathlistwidgetitem.cpp SubUI/UpdatePlugins/gitpathlistwidgetitem.ui
 
-
         )
     endif()
 endif()
 
-target_link_libraries(UnrealProjectTool PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(UnrealProjectTool PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    ${CMAKE_SOURCE_DIR}/ThirdParty/libgit2/lib
+)
+
+include_directories(${CMAKE_SOURCE_DIR}/ThirdParty/libgit2/include)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

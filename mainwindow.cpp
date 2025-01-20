@@ -37,6 +37,7 @@ void MainWindow::OnUpdatePluginBtnClicked()
     if(UpdatePluginDialoguePtr == nullptr)
     {
         UpdatePluginDialoguePtr = std::make_shared<UpdatePluginDialogue>(this);
+        connect(UpdatePluginDialoguePtr.get(), &QDialog::finished, this, &MainWindow::OnUpdatePluginDialogueClosed);
     }
 
     UpdatePluginDialoguePtr->open();
@@ -44,5 +45,5 @@ void MainWindow::OnUpdatePluginBtnClicked()
 
 void MainWindow::OnUpdatePluginDialogueClosed()
 {
-    // TODO 看情况 是否需要清理 UpdatePluginDialoguePtr 对象33
+    UpdatePluginDialoguePtr.reset();
 }

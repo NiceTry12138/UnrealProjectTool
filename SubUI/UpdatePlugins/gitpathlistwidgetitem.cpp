@@ -1,5 +1,7 @@
 #include "gitpathlistwidgetitem.h"
 #include "ui_gitpathlistwidgetitem.h"
+#include "git2.h"
+
 
 GitPathListWidgetItem::GitPathListWidgetItem(QWidget *parent)
     : QWidget(parent), ui(new Ui::GitPathListWidgetItem)
@@ -15,18 +17,19 @@ GitPathListWidgetItem::~GitPathListWidgetItem()
     delete ui;
 }
 
-void GitPathListWidgetItem::UpdateInfo(const QString &InInfo)
+void GitPathListWidgetItem::UpdateInfo(const QString &InInfo, int InID)
 {
     CacheInfo = InInfo;
     ui->TxtGitPath->setText(InInfo);
+    ID = InID;
 }
 
 void GitPathListWidgetItem::OnDeleteButtonClicked()
 {
-    OnDelete(CacheInfo);
+    OnDelete(CacheInfo, ID);
 }
 
 void GitPathListWidgetItem::OnDetailButtonClicked()
 {
-    OnDetail(CacheInfo);
+    OnDetail(CacheInfo, ID);
 }

@@ -6,8 +6,10 @@
 #include "QDebug"
 #include "QRegularExpression"
 #include "QRegularExpressionMatch"
-#include "../../Util/applicationsettings.h"
 #include "QListWidget"
+#include "../../Util/applicationsettings.h"
+#include "gitpathlistwidgetitem.h"
+#include "QDir"
 
 QWidget *GitPathStyleDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -81,8 +83,12 @@ UpdatePluginDialogue::UpdatePluginDialogue(QWidget *parent)
 
 UpdatePluginDialogue::~UpdatePluginDialogue()
 {
+    for(auto Item = WidgetItemList.rbegin(); Item != WidgetItemList.rend(); ++Item)
+    {
+        RemoveListWidgetItem(Item->first, false);
+    }
+    WidgetItemList.clear();
     delete ui;
-    // GitPathDelegatePtr.reset();
 }
 
 void UpdatePluginDialogue::Init()
@@ -98,24 +104,21 @@ void UpdatePluginDialogue::BindCallback()
     connect(ui->BtnUpdate, &QPushButton::clicked, this, &UpdatePluginDialogue::OnUpdateBtnClicked);
     connect(ui->BtnClose, &QPushButton::clicked, this, &UpdatePluginDialogue::OnCloseBtnClicked);
     connect(ui->BtnAddGit, &QPushButton::clicked, this, &UpdatePluginDialogue::OnAddBtnClicked);
-    // connect(GitPathDelegatePtr.get(), &GitPathStyleDelegate::ButtonClicked, this, &UpdatePluginDialogue::OnDeleteListItemClicked);
 }
 
 void UpdatePluginDialogue::InitData()
 {
     GitPathResources = ApplicationSettings::Get()->GetAddedPluginResources();
 
-    // GitPathListModel.setStringList(GitPathResources);
-    // GitPathDelegatePtr = std::make_shared<GitPathStyleDelegate>(ui->GitPathListWidget);
 }
 
 void UpdatePluginDialogue::InitWidgets()
 {
-    // ui->GitPathListWidget->setModel(&GitPathListModel);
-    // ui->GitPathListWidget->setItemDelegate(GitPathDelegatePtr.get());
-    // ui->GitPathListWidget->addItem()
-
-
+    for(const auto& SavedItem : GitPathResources)
+    {
+        AddListWidgetItem(SavedItem);
+    }
+    ui->GitPathListWidget->setUpdatesEnabled(true);
 }
 
 EErrorType UpdatePluginDialogue::CheckGitPathValid(const QString &GitPath)
@@ -155,6 +158,68 @@ EErrorType UpdatePluginDialogue::CheckGitPathValid(const QString &GitPath)
     return EErrorType::E_NONE;
 }
 
+void UpdatePluginDialogue::AddListWidgetItem(const QString& InInfo)
+{
+    ++WidgetIndex;
+
+    // 创建自定义窗口
+    auto ItemWidget = new GitPathListWidgetItem(ui->GitPathListWidget);
+    ItemWidget->UpdateInfo(InInfo, WidgetIndex);
+    connect(ItemWidget, &GitPathListWidgetItem::OnDelete, this, &UpdatePluginDialogue::OnDeleteListItemClicked);
+    connect(ItemWidget, &GitPathListWidgetItem::OnDetail, this, &UpdatePluginDialogue::OnDetailListItemClicked);
+
+    // 创建 Item
+    QListWidgetItemPtr ListItem = std::make_shared<QListWidgetItem>(ui->GitPathListWidget);
+    ListItem->setSizeHint(ItemWidget->sizeHint());
+
+    // 存储引用
+    WidgetItemList[WidgetIndex] = ListItem;
+
+    // 添加并刷新
+    ui->GitPathListWidget->addItem(ListItem.get());
+    ui->GitPathListWidget->setItemWidget(ListItem.get(), ItemWidget);
+    ItemWidget->show();
+
+    ui->GitPathListWidget->update();
+    // ui->GitPathListWidget->repaint();
+}
+
+void UpdatePluginDialogue::RemoveListWidgetItem(int ID, bool DeleteID)
+{
+    if(WidgetItemList.find(ID) == WidgetItemList.end())
+    {
+        // 未找到 不做处理
+        return;
+    }
+
+    // 获取指定行的 QListWidgetItem
+    auto Item = WidgetItemList[ID];
+    if (!Item)
+    {
+        // 如果行不存在，直接返回
+        return;
+    }
+
+
+    // 获取关联的小部件
+    QWidget* widget = ui->GitPathListWidget->itemWidget(Item.get());
+    ui->GitPathListWidget->removeItemWidget(Item.get());
+    if (widget)
+    {
+        delete widget;  // 删除小部件
+    }
+
+    // 删除 QListWidgetItem
+    Item.reset();
+    if(DeleteID)
+    {
+        WidgetItemList.erase(ID);
+    }
+    ui->GitPathListWidget->setUpdatesEnabled(true);
+    ui->GitPathListWidget->update();
+    // ui->GitPathListWidget->repaint();
+}
+
 void UpdatePluginDialogue::OnCloseBtnClicked()
 {
     this->close();
@@ -173,22 +238,30 @@ void UpdatePluginDialogue::OnAddBtnClicked()
 
     GitPathResources.append(InGitPath);
 
-    // GitPathListModel.setStringList(GitPathResources);
     UpdateConfig();
+    AddListWidgetItem(InGitPath);
 }
 
 void UpdatePluginDialogue::OnUpdateBtnClicked()
 {
+    for(const auto& GitRepo : GitPathResources)
+    {
+        QString RepoName = GetRepoNameByPath(GitRepo);
+    }
 }
 
-void UpdatePluginDialogue::OnDeleteListItemClicked(const QModelIndex &index)
+void UpdatePluginDialogue::OnDeleteListItemClicked(const QString &Info, int OutID)
 {
-    // QString DeleteData = GitPathListModel.data(index).toString();
-    // int DeleteIndex = GitPathResources.indexOf(DeleteData);
-    // GitPathResources.removeAt(DeleteIndex);
-    // GitPathListModel.setStringList(GitPathResources);
+    GitPathResources.removeAll(Info);
+    RemoveListWidgetItem(OutID);
     UpdateConfig();
 }
+
+void UpdatePluginDialogue::OnDetailListItemClicked(const QString &Info, int OutID)
+{
+
+}
+
 
 QString UpdatePluginDialogue::GetRepoNameByPath(const QString &InGitPath)
 {

@@ -51,6 +51,8 @@ protected:
     void AddListWidgetItem(const QString& InInfo);
     void RemoveListWidgetItem(int ID, bool DelteID = true);
 
+    void CloneRepo(const QString& URL);
+
 protected:
     void OnCloseBtnClicked();
     void OnAddBtnClicked();

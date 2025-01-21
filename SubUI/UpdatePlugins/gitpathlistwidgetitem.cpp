@@ -1,7 +1,5 @@
 #include "gitpathlistwidgetitem.h"
 #include "ui_gitpathlistwidgetitem.h"
-#include "git2.h"
-
 
 GitPathListWidgetItem::GitPathListWidgetItem(QWidget *parent)
     : QWidget(parent), ui(new Ui::GitPathListWidgetItem)

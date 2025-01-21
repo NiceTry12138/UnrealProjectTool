@@ -7,9 +7,13 @@
 #include "QRegularExpression"
 #include "QRegularExpressionMatch"
 #include "QListWidget"
-#include "../../Util/applicationsettings.h"
-#include "gitpathlistwidgetitem.h"
 #include "QDir"
+
+#include "gitpathlistwidgetitem.h"
+#include "../../Util/applicationsettings.h"
+#include "../../Util/gitoperationtool.h"
+
+static const QString G_PLUGINDIR = "Plugins";
 
 QWidget *GitPathStyleDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -135,7 +139,6 @@ EErrorType UpdatePluginDialogue::CheckGitPathValid(const QString &GitPath)
         }
     }
 
-    // TODO 通过正则检查链接是否正确
     bool bStartCheck = GitPath.startsWith("https://") || GitPath.startsWith("git@");
     bool bEndCheck = GitPath.endsWith(".git");
 
@@ -220,6 +223,22 @@ void UpdatePluginDialogue::RemoveListWidgetItem(int ID, bool DeleteID)
     // ui->GitPathListWidget->repaint();
 }
 
+void UpdatePluginDialogue::CloneRepo(const QString &URL)
+{
+    QString RepoName = GetRepoNameByPath(URL);
+
+    QString ExePath = QCoreApplication::applicationDirPath();
+    QDir BaseDir(ExePath);
+
+    if(!BaseDir.exists(G_PLUGINDIR))
+    {
+        BaseDir.mkdir(G_PLUGINDIR);
+    }
+
+    BaseDir.cd(G_PLUGINDIR);
+    GitRepoManager::Get()->CloneRepo(URL, BaseDir.filePath(RepoName));
+}
+
 void UpdatePluginDialogue::OnCloseBtnClicked()
 {
     this->close();
@@ -246,7 +265,7 @@ void UpdatePluginDialogue::OnUpdateBtnClicked()
 {
     for(const auto& GitRepo : GitPathResources)
     {
-        QString RepoName = GetRepoNameByPath(GitRepo);
+        CloneRepo(GitRepo);
     }
 }
 

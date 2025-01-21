@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+# add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty/libgit2/lib)
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
@@ -44,17 +46,21 @@ else()
             Util/unrealhelper.h Util/unrealhelper.cpp
             Util/applicationsettings.h Util/applicationsettings.cpp
             SubUI/UpdatePlugins/gitpathlistwidgetitem.h SubUI/UpdatePlugins/gitpathlistwidgetitem.cpp SubUI/UpdatePlugins/gitpathlistwidgetitem.ui
+            Util/gitoperationtool.h Util/gitoperationtool.cpp
 
         )
     endif()
 endif()
 
-target_link_libraries(UnrealProjectTool PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets
-    ${CMAKE_SOURCE_DIR}/ThirdParty/libgit2/lib
-)
 
-include_directories(${CMAKE_SOURCE_DIR}/ThirdParty/libgit2/include)
+# include_directories(${CMAKE_CURRENT_LIST_DIR}/ThirdParty/libgit2/include/)
+
+target_link_libraries(UnrealProjectTool PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
+# target_link_libraries(UnrealProjectTool PUBLIC
+#     ${CMAKE_CURRENT_LIST_DIR}/ThirdParty/libgit2/lib/git2.lib
+#     ${CMAKE_CURRENT_LIST_DIR}/ThirdParty/libgit2/lib/libgit2_clar.lib
+#     ${CMAKE_CURRENT_LIST_DIR}/ThirdParty/libgit2/lib/cppgit2.lib
+# )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

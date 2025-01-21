@@ -77,6 +77,8 @@ bool GitRepoObject::CloneGitRepo(const QString &RepoPathUrl, const QString& Clon
     URL = RepoPathUrl;
     bIsProcessFinished = false;
 
+    CurrentState = EGitToolState::E_CLONE;
+
     QStringList Params;
     Params << "clone" << RepoPathUrl << ClonePath;
 
@@ -93,6 +95,8 @@ bool GitRepoObject::RevertGitRepo(const QString &RepoDirPath)
     }
 
     bIsProcessFinished = false;
+
+    CurrentState = EGitToolState::E_Reset;
 
     QStringList Params;
     ProcessPtr->setWorkingDirectory(RepoDirPath);

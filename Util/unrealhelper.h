@@ -1,7 +1,7 @@
 #ifndef UNREALHELPER_H
 #define UNREALHELPER_H
 
-#include "set"
+#include "map"
 #include "QString"
 
 class UnrealHelper
@@ -13,7 +13,9 @@ public:
     UnrealHelper(const UnrealHelper& Other) = delete;
     UnrealHelper(const UnrealHelper&& Other) = delete;
 
-    std::set<QString>& GetInstalledUnrealVersion();
+    std::map<QString, QString>& GetInstalledUnrealVersion();
+
+    bool GenerateProject(const QString& EngineAppName, const QString& UProjectFilePath);
 
 protected:
     UnrealHelper();
@@ -25,7 +27,7 @@ protected:
     void InitUnrealVersionList();
 
 private:
-    std::set<QString> InstalledUnreal;
+    std::map<QString, QString> InstalledUnreal;
 
 };
 

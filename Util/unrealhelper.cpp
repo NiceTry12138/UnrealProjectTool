@@ -7,6 +7,7 @@
 #include "QJsonDocument"
 #include "QJsonObject"
 #include "QJsonArray"
+#include "QProcess"
 
 UnrealHelper *UnrealHelper::Get()
 {
@@ -14,9 +15,46 @@ UnrealHelper *UnrealHelper::Get()
     return &Helper;
 }
 
-std::set<QString>& UnrealHelper::GetInstalledUnrealVersion()
+std::map<QString, QString>& UnrealHelper::GetInstalledUnrealVersion()
 {
     return InstalledUnreal;
+}
+
+// UnrealHelper::Get()->GenerateProject("UE_5.3", "E:/Project/Custom53/Custom53.uproject");
+bool UnrealHelper::GenerateProject(const QString& EngineAppName, const QString &UProjectFilePath)
+{
+    QFile ProjectFile(UProjectFilePath);
+    auto AppConf = InstalledUnreal.find(EngineAppName);
+
+    if(!ProjectFile.exists() || AppConf == InstalledUnreal.end())
+    {
+        return false;
+    }
+
+    static QString G_UBTPATH = "Engine/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.exe";
+
+    QDir InstallDir(AppConf->second);
+    QString ExeUBPPAth = InstallDir.filePath(G_UBTPATH);
+    QFile ExeUBPFile(ExeUBPPAth);
+
+    if(!ExeUBPFile.exists())
+    {
+        return false;
+    }
+
+    QProcess GenerateProcess;
+
+    QStringList Params;
+    Params << "-projectfiles" << "-project=" + UProjectFilePath << "-game" << "-engine";
+
+    GenerateProcess.start(ExeUBPPAth, Params);
+    GenerateProcess.waitForFinished(5000);
+
+    // 读取标准输出
+    QString output = GenerateProcess.readAllStandardOutput();
+    qDebug() << "Command output:" << output;
+
+    return true;
 }
 
 UnrealHelper::UnrealHelper() {
@@ -82,8 +120,12 @@ void UnrealHelper::InitUnrealVersionList()
         auto InstallationItem = Arr.at(ArrIndex);
         auto InstallationItemObj = InstallationItem.toObject();
         auto ItemInstallLocation = InstallationItemObj.find("InstallLocation");
+        auto ItemAppName = InstallationItemObj.find("AppName")->toString();
         QString InstallLocationPath = ItemInstallLocation->toString();
+        if(ItemAppName.startsWith("UE_"))
+        {
+            InstalledUnreal[ItemAppName] = InstallLocationPath;
+        }
         // qDebug() << "ItemInstallLocationPath -> " << InstallLocationPath;
-        InstalledUnreal.insert(InstallLocationPath);
     }
 }

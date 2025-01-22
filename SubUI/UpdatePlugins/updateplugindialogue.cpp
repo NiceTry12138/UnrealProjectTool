@@ -12,8 +12,7 @@
 #include "gitpathlistwidgetitem.h"
 #include "../../Util/applicationsettings.h"
 #include "../../Util/gitoperationtool.h"
-
-static const QString G_PLUGINDIR = "Plugins";
+#include "updatepluginprocessdialogue.h"
 
 QWidget *GitPathStyleDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -150,11 +149,11 @@ EErrorType UpdatePluginDialogue::CheckGitPathValid(const QString &GitPath)
         return EErrorType::E_ERRORCONTENT;
     }
 
-    QString NewRepoName = GetRepoNameByPath(GitPath);
+    QString NewRepoName = GitRepoObject::GetRepoNameByPath(GitPath);
 
     for(const auto& AddedRepo : GitPathResources)
     {
-        QString AddedRepoName = GetRepoNameByPath(AddedRepo);
+        QString AddedRepoName = GitRepoObject::GetRepoNameByPath(AddedRepo);
         if(AddedRepoName == NewRepoName)
         {
             return EErrorType::E_SAMETYPE;
@@ -226,22 +225,6 @@ void UpdatePluginDialogue::RemoveListWidgetItem(int ID, bool DeleteID)
     // ui->GitPathListWidget->repaint();
 }
 
-void UpdatePluginDialogue::CloneRepo(const QString &URL)
-{
-    QString RepoName = GetRepoNameByPath(URL);
-
-    QString ExePath = QCoreApplication::applicationDirPath();
-    QDir BaseDir(ExePath);
-
-    if(!BaseDir.exists(G_PLUGINDIR))
-    {
-        BaseDir.mkdir(G_PLUGINDIR);
-    }
-
-    BaseDir.cd(G_PLUGINDIR);
-    GitRepoManager::Get()->CloneRepo(URL, BaseDir.filePath(RepoName));
-}
-
 void UpdatePluginDialogue::DelayCheck()
 {
     Timer.stop();
@@ -286,10 +269,9 @@ void UpdatePluginDialogue::OnUpdateBtnClicked()
         return;
     }
 
-    for(const auto& GitRepo : GitPathResources)
-    {
-        CloneRepo(GitRepo);
-    }
+    UpdatePluginProcessDialogue ProcessDialogue(this);
+    ProcessDialogue.StartWithGitPathResources(GitPathResources);
+    ProcessDialogue.exec();
 }
 
 void UpdatePluginDialogue::OnDeleteListItemClicked(const QString &Info, int OutID)
@@ -302,27 +284,6 @@ void UpdatePluginDialogue::OnDeleteListItemClicked(const QString &Info, int OutI
 void UpdatePluginDialogue::OnDetailListItemClicked(const QString &Info, int OutID)
 {
 
-}
-
-
-QString UpdatePluginDialogue::GetRepoNameByPath(const QString &InGitPath)
-{
-    // https://github.com/NiceTry12138/UnrealProjectTool.git
-    // git@github.com:NiceTry12138/UnrealProjectTool.git
-    QString Result;
-    auto SplitStrs = InGitPath.split("/");
-    if(SplitStrs.size() <= 0)
-    {
-        return Result;
-    }
-
-    Result = SplitStrs.last();
-    if(Result.endsWith(".git"))
-    {
-        Result.chop(4);
-    }
-
-    return Result;
 }
 
 void UpdatePluginDialogue::LogWithAddRepo(EErrorType InType)

@@ -26,6 +26,26 @@ bool GitRepoObject::CheckCommandGit()
     }
 }
 
+QString GitRepoObject::GetRepoNameByPath(const QString &InGitPath)
+{
+    // https://github.com/NiceTry12138/UnrealProjectTool.git
+    // git@github.com:NiceTry12138/UnrealProjectTool.git
+    QString Result;
+    auto SplitStrs = InGitPath.split("/");
+    if(SplitStrs.size() <= 0)
+    {
+        return Result;
+    }
+
+    Result = SplitStrs.last();
+    if(Result.endsWith(".git"))
+    {
+        Result.chop(4);
+    }
+
+    return Result;
+}
+
 QStringList GitRepoObject::GetBranchList(const QString &RepoDirPath)
 {
     return QStringList();
@@ -202,6 +222,19 @@ void GitRepoManager::CloneRepo(const QString &InRepoUrl, const QString &InLocalP
     }
 
     Repos[RepoID] = GitTool;
+}
+
+int GitRepoManager::GetRunningRepoCount()
+{
+    int Count = 0;
+    for(const auto& ProcessItem : Repos)
+    {
+        if(ProcessItem.second->IsRunning())
+        {
+            ++Count;
+        }
+    }
+    return Count;
 }
 
 void GitRepoManager::OnRepoToolFinished(int InRepoID, bool Success)

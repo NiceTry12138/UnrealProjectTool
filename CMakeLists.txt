@@ -47,6 +47,7 @@ else()
             Util/applicationsettings.h Util/applicationsettings.cpp
             SubUI/UpdatePlugins/gitpathlistwidgetitem.h SubUI/UpdatePlugins/gitpathlistwidgetitem.cpp SubUI/UpdatePlugins/gitpathlistwidgetitem.ui
             Util/gitoperationtool.h Util/gitoperationtool.cpp
+            SubUI/UpdatePlugins/updatepluginprocessdialogue.h SubUI/UpdatePlugins/updatepluginprocessdialogue.cpp SubUI/UpdatePlugins/updatepluginprocessdialogue.ui
 
         )
     endif()

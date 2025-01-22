@@ -22,6 +22,7 @@ class GitRepoObject : public QObject
 public:
     static bool CheckCommandGit();
     static QStringList GetBranchList(const QString& RepoDirPath);
+    static QString GetRepoNameByPath(const QString &InGitPath);
 
 public:
     GitRepoObject(QObject* Parent = nullptr);

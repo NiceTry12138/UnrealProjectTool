@@ -53,8 +53,6 @@ protected:
     void AddListWidgetItem(const QString& InInfo);
     void RemoveListWidgetItem(int ID, bool DelteID = true);
 
-    void CloneRepo(const QString& URL);
-
     void DelayCheck();
 
 protected:
@@ -65,7 +63,6 @@ protected:
     void OnDeleteListItemClicked(const QString& Info, int OutID);
     void OnDetailListItemClicked(const QString& Info, int OutID);
 
-    QString GetRepoNameByPath(const QString& InGitPath);
     void LogWithAddRepo(EErrorType InType);
 
     void UpdateConfig();

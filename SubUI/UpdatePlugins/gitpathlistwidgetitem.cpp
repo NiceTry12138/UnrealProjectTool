@@ -1,6 +1,8 @@
 #include "gitpathlistwidgetitem.h"
 #include "ui_gitpathlistwidgetitem.h"
 
+#include "QMessageBox"
+
 GitPathListWidgetItem::GitPathListWidgetItem(QWidget *parent)
     : QWidget(parent), ui(new Ui::GitPathListWidgetItem)
 {
@@ -29,5 +31,6 @@ void GitPathListWidgetItem::OnDeleteButtonClicked()
 
 void GitPathListWidgetItem::OnDetailButtonClicked()
 {
+    QMessageBox::information(nullptr, " 没功能 ", " 功能未实现 ", QMessageBox::No, QMessageBox::No);
     OnDetail(CacheInfo, ID);
 }

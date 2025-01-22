@@ -4,8 +4,10 @@
 #include <QDialog>
 #include "QStringListModel"
 #include "QStyledItemDelegate"
-#include "../../CommonData.h"
 #include "QListWidgetItem"
+#include "QTimer"
+
+#include "../../CommonData.h"
 
 typedef std::shared_ptr<QListWidgetItem> QListWidgetItemPtr;
 
@@ -53,6 +55,8 @@ protected:
 
     void CloneRepo(const QString& URL);
 
+    void DelayCheck();
+
 protected:
     void OnCloseBtnClicked();
     void OnAddBtnClicked();
@@ -72,6 +76,8 @@ private:
 private:
 
 private:
+    QTimer Timer;
+
     int WidgetIndex = 0;
 
     // Datas

@@ -101,6 +101,9 @@ void UpdatePluginDialogue::Init()
     InitWidgets();
 
     BindCallback();
+
+    connect(&Timer, &QTimer::timeout, this, &UpdatePluginDialogue::DelayCheck);
+    Timer.start(1000);
 }
 
 void UpdatePluginDialogue::BindCallback()
@@ -239,6 +242,19 @@ void UpdatePluginDialogue::CloneRepo(const QString &URL)
     GitRepoManager::Get()->CloneRepo(URL, BaseDir.filePath(RepoName));
 }
 
+void UpdatePluginDialogue::DelayCheck()
+{
+    Timer.stop();
+
+    bool CheckCMD = GitRepoObject::CheckCommandGit();
+    if(!CheckCMD)
+    {
+        QMessageBox::information(nullptr, "Can not Find Git Command", " Please Install Git Or Check Git Command Line ", QMessageBox::No, QMessageBox::No);
+        this->close();
+        return;
+    }
+}
+
 void UpdatePluginDialogue::OnCloseBtnClicked()
 {
     this->close();
@@ -263,6 +279,13 @@ void UpdatePluginDialogue::OnAddBtnClicked()
 
 void UpdatePluginDialogue::OnUpdateBtnClicked()
 {
+    QString Msg = "如果本地存在仓库,会 Reset 该仓库，复原所有修改并删除新增文件，请确定";
+    auto Result = QMessageBox::information(nullptr, "Clone Or Reset Plugins", Msg, QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
+    if(Result == QMessageBox::No)
+    {
+        return;
+    }
+
     for(const auto& GitRepo : GitPathResources)
     {
         CloneRepo(GitRepo);

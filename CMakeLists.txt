@@ -48,6 +48,7 @@ else()
             SubUI/UpdatePlugins/gitpathlistwidgetitem.h SubUI/UpdatePlugins/gitpathlistwidgetitem.cpp SubUI/UpdatePlugins/gitpathlistwidgetitem.ui
             Util/gitoperationtool.h Util/gitoperationtool.cpp
             SubUI/UpdatePlugins/updatepluginprocessdialogue.h SubUI/UpdatePlugins/updatepluginprocessdialogue.cpp SubUI/UpdatePlugins/updatepluginprocessdialogue.ui
+            SubUI/Common/generateuproject.h SubUI/Common/generateuproject.cpp SubUI/Common/generateuproject.ui
 
         )
     endif()

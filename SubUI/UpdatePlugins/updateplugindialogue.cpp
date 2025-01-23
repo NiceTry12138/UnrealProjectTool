@@ -7,11 +7,11 @@
 #include "QRegularExpression"
 #include "QRegularExpressionMatch"
 #include "QListWidget"
-#include "QDir"
 
 #include "gitpathlistwidgetitem.h"
 #include "../../Util/applicationsettings.h"
 #include "../../Util/gitoperationtool.h"
+#include "../Common/generateuproject.h"
 #include "updatepluginprocessdialogue.h"
 
 QWidget *GitPathStyleDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -272,6 +272,9 @@ void UpdatePluginDialogue::OnUpdateBtnClicked()
     UpdatePluginProcessDialogue ProcessDialogue(this);
     ProcessDialogue.StartWithGitPathResources(GitPathResources);
     ProcessDialogue.exec();
+
+    GenerateUProjectDialogue GenerateDialogue(this);
+    GenerateDialogue.exec();
 }
 
 void UpdatePluginDialogue::OnDeleteListItemClicked(const QString &Info, int OutID)

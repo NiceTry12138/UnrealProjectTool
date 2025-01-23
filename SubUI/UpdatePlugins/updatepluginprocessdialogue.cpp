@@ -62,6 +62,11 @@ void UpdatePluginProcessDialogue::CheckProcess()
     qDebug() << "RunningCount = " << RunningCount << " TotalCount = " << TotalCount << " Value = " << Value;
 
     ui->TotalProgress->setValue(Value);
+
+    if(RunningCount == 0)
+    {
+        this->close();
+    }
 }
 
 void UpdatePluginProcessDialogue::closeEvent(QCloseEvent *Event)
